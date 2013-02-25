@@ -14,27 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var app = {
-    createStompClient: function() {
-        var url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/eventbus';
-		eb = new vertx.EventBus(url); // does a connect;
-		
-        eb.onopen = function() {
-			console.log('Connected');
-			// subscribe and register 'handler':
-			eb.registerHandler("org.aerogear.messaging", function(msg, replyTo) {
-				console.log('mmmmm' + msg.text);
-				var output = app.insertPayload(msg.text);
-				$('#listview').append(output).listview('refresh');
-			});
-        };
-    },
-	insertPayload: function(payload) {
-		// I am sure there is a nicer way to get this shit done....:
-	   return "<li data-icon='delete'><a href='#' onclick=\"javascript:this.parentNode.parentNode.parentNode.style.display='none';\">" + payload + "</a></li>";
-	},
-    // Application Constructor
-    initialize: function() {
-        this.createStompClient();
+
+var notifier = AeroGear.Notifier({
+    name: "stompClient",
+    settings: {
+        connectURL: "http://localhost:8080/eventbus",
+        onConnect: function() {
+            console.log('Connected');
+        },
+        onDisconnect: function() {
+            console.log('Disconnected');
+        },
+        onConnectError: function() {
+            console.log('Connect Error');
+        },
+        channels: [{
+            address: "org.aerogear.messaging",
+            callback: function( msg, replyTo ) {
+                console.log( "mmmmm" + msg.text );
+                $("#listview").append("<li data-icon='delete'><a href='#'>" + msg.text + "</a></li>").listview("refresh");
+            }
+        }]
     }
-};
+});
+
+$( "#listview" ).on( "click", "li", function( event ) {
+    $( this ).remove();
+    $("#listview").listview("refresh");
+});
