@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-$("#bidButton").click(function (e) {
-	var bidValue = $("#bidSlider").val();
+$("#pointButton").click(function (e) {
+	var pointValue = $("#pointSlider").val();
     $.ajax({
-    	url:"http://localhost:8080/details/david/" + bidValue
+    	url:"http://localhost:8080/details/david/" + pointValue
     });
 });
 var app = {
@@ -31,7 +31,7 @@ var app = {
 			eb.registerHandler("org.aerogear.messaging", function(msg, replyTo) {
 				console.log('mmmmm' + msg.text);
 				//var output = app.insertPayload(msg.text);
-				$('#currentBid').text(msg.text);
+				$('#currentPoints').text(msg.text);
 				//$('#listview').append(output).listview('refresh');
 			});
         };
