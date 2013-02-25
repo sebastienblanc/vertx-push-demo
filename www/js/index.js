@@ -14,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+$("#bidButton").click(function (e) {
+	var bidValue = $("#bidSlider").val();
+    $.ajax({
+    	url:"http://localhost:8080/details/david/" + bidValue
+    });
+});
 var app = {
     createStompClient: function() {
         var url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/eventbus';
@@ -24,8 +30,9 @@ var app = {
 			// subscribe and register 'handler':
 			eb.registerHandler("org.aerogear.messaging", function(msg, replyTo) {
 				console.log('mmmmm' + msg.text);
-				var output = app.insertPayload(msg.text);
-				$('#listview').append(output).listview('refresh');
+				//var output = app.insertPayload(msg.text);
+				$('#currentBid').text(msg.text);
+				//$('#listview').append(output).listview('refresh');
 			});
         };
     },
@@ -37,4 +44,6 @@ var app = {
     initialize: function() {
         this.createStompClient();
     }
+
+
 };

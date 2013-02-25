@@ -29,7 +29,7 @@ rm.get('/details/:user/:id', function(req) {
   req.response.end("User: " + req.params()['user'] + " ID: " + req.params()['id'])
   
   // Publish to the Event bus....
-  var json = {text: "New Item (ID:" + req.params()['id'] + ") created!"};
+  var json = {text: req.params()['id']};
   console.log("Queued message...");
   eb.publish("org.aerogear.messaging", json);
   
