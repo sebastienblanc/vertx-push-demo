@@ -18,7 +18,7 @@
 var notifier = AeroGear.Notifier({
     name: "stompClient",
     settings: {
-        connectURL: "http://localhost:8080/eventbus",
+        connectURL: window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + "/eventbus",
         onConnect: function() {
             console.log('Connected');
         },
