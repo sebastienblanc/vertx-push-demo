@@ -18,10 +18,9 @@
 var notifier = AeroGear.Notifier({
     name: "stompClient",
     settings: {
+        autoConnect: false,
         connectURL: window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + "/eventbus",
-        onConnect: function() {
-            console.log('Connected');
-        },
+        onConnect: onConnect,
         onDisconnect: function() {
             console.log('Disconnected');
         },
@@ -30,13 +29,26 @@ var notifier = AeroGear.Notifier({
         },
         channels: [{
             address: "org.aerogear.messaging",
-            callback: function( msg, replyTo ) {
+            callback: function( msg ) {
                 console.log( "mmmmm" + msg.text );
                 $("#listview").append("<li data-icon='delete'><a href='#'>" + msg.text + "</a></li>").listview("refresh");
             }
         }]
     }
 });
+
+function onConnect() {
+    console.log('Connected');
+
+    // Add subscription
+    notifier.clients.stompClient.subscribe({
+        address: "org.aerogear.test",
+        callback: function( msg ) {
+            console.log( "mmmmm" + msg.text );
+            $("#listview").append("<li data-icon='delete' data-theme='a'><a href='#'>" + msg.text + "</a></li>").listview("refresh");
+        }
+    });
+}
 
 $( "#listview" ).on( "click", "li", function( event ) {
     $( this ).remove();
