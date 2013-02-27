@@ -26,23 +26,34 @@ var eb = vertx.eventBus;
 var rm = new vertx.RouteMatcher();
 // Extract the params from the uri
 rm.get('/details/:user/:id', function(req) {
-  req.response.end("User: " + req.params()['user'] + " ID: " + req.params()['id'])
-  
+  req.response.end("User: " + req.params()['user'] + " ID: " + req.params()['id']);
+
   // Publish to the Event bus....
   var json = {text: "New Item (ID:" + req.params()['id'] + ") created!"};
   console.log("Queued message...");
   eb.publish("org.aerogear.messaging", json);
-  
+
+});
+
+// Another endpoint for testing
+rm.get('/test', function(req) {
+  req.response.end("Test");
+
+  // Publish to the Event bus....
+  var json = {text: "Test item created!"};
+  console.log("Queued message...");
+  eb.publish("org.aerogear.test", json);
+
 });
 
 // Catch all - serve the index page
 rm.getWithRegEx('.*', function(req) {
   //if (req.uri == "/rest") req.response.sendFile("route_match/index.html")
-  if (req.uri == "/msg") req.response.sendFile("www/index.html")
+  if (req.uri == "/msg") req.response.sendFile("www/index.html");
   else {
 	  // meh...
-	  req.response.sendFile('www/' + req.path); 
-  } 
+	  req.response.sendFile('www/' + req.path);
+  }
 });
 
 // 'deploy:
