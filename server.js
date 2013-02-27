@@ -29,7 +29,7 @@ rm.get('/details/:user/:id', function(req) {
   req.response.end("User: " + req.params()['user'] + " ID: " + req.params()['id']);
 
   // Publish to the Event bus....
-  var json = {text: "New Item (ID:" + req.params()['id'] + ") created!"};
+  var json = {text: "New Item (ID:" + req.params()['id'] + ") created!", theme: "b"};
   console.log("Queued message...");
   eb.publish("org.aerogear.messaging", json);
 
@@ -40,7 +40,7 @@ rm.get('/test', function(req) {
   req.response.end("Test");
 
   // Publish to the Event bus....
-  var json = {text: "Test item created!"};
+  var json = {text: "Test item created!", theme: "a"};
   console.log("Queued message...");
   eb.publish("org.aerogear.test", json);
 

@@ -18,39 +18,64 @@
 var notifier = AeroGear.Notifier({
     name: "stompClient",
     settings: {
-        autoConnect: false,
         connectURL: window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + "/eventbus",
-        onConnect: onConnect,
+        onConnect: function() {
+            console.log('Connected');
+        },
         onDisconnect: function() {
             console.log('Disconnected');
         },
         onConnectError: function() {
             console.log('Connect Error');
-        },
-        channels: [{
-            address: "org.aerogear.messaging",
-            callback: function( msg ) {
-                console.log( "mmmmm" + msg.text );
-                $("#listview").append("<li data-icon='delete'><a href='#'>" + msg.text + "</a></li>").listview("refresh");
-            }
-        }]
+        }
     }
 });
 
-function onConnect() {
-    console.log('Connected');
-
-    // Add subscription
-    notifier.clients.stompClient.subscribe({
-        address: "org.aerogear.test",
-        callback: function( msg ) {
-            console.log( "mmmmm" + msg.text );
-            $("#listview").append("<li data-icon='delete' data-theme='a'><a href='#'>" + msg.text + "</a></li>").listview("refresh");
-        }
-    });
+function channelCallback( msg ) {
+    console.log( "mmmmm" + msg.text );
+    $("#listview").append("<li data-icon='delete' data-theme='" + msg.theme + "'><a href='#'>" + msg.text + "</a></li>").listview("refresh");
 }
 
+// Message removal
 $( "#listview" ).on( "click", "li", function( event ) {
     $( this ).remove();
     $("#listview").listview("refresh");
+});
+
+// Subscribe to Channel
+$( "#channel-list" ).on( "click", ".add", function( event ) {
+    var $this = $( this ),
+        addCount = $("#available-channels .ui-li-count"),
+        subCount = $("#subscribed-channels .ui-li-count");
+
+    notifier.clients.stompClient.subscribe({
+        address: $.trim( $this.text() ),
+        callback: channelCallback
+    });
+    $this
+        .toggleClass("add remove")
+        .buttonMarkup({ icon: "delete"})
+        .insertBefore("#available-channels");
+    addCount.text( +addCount.text() - 1 );
+    subCount.text( +subCount.text() + 1 );
+    $("#channel-list").listview("refresh");
+});
+
+// Unsubscribe from Channel
+$( "#channel-list" ).on( "click", ".remove", function( event ) {
+    var $this = $( this ),
+        addCount = $("#available-channels .ui-li-count"),
+        subCount = $("#subscribed-channels .ui-li-count");
+
+    notifier.clients.stompClient.unsubscribe({
+        address: $.trim( $this.text() ),
+        callback: channelCallback
+    });
+    $this
+        .toggleClass("add remove")
+        .buttonMarkup({ icon: "plus"})
+        .appendTo("#channel-list");
+    addCount.text( +addCount.text() + 1 );
+    subCount.text( +subCount.text() - 1 );
+    $("#channel-list").listview("refresh");
 });
