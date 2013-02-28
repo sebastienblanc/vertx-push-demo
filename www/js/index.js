@@ -15,12 +15,44 @@
  * limitations under the License.
  */
 
+var itemPipe =  AeroGear.Pipeline({name: "items"}).pipes.items
+
 var notifier = AeroGear.Notifier({
     name: "stompClient",
     settings: {
         connectURL: window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + "/eventbus",
         onConnect: function() {
-            console.log('Connected');
+            itemPipe.read({
+                success: function(data) {
+
+                   var i=0;
+                    for (tot=data.length; i < tot; i++) {
+                        $("#listview").append("<li data-icon='delete'><a href='#'>" + data[i].title + "</a><div id='countdown"+i+"'></div></li>");
+                        var currentDate = new Date();
+                        var timeleft = data[i].timeleft
+                        $('div#countdown'+i).countdown(timeleft * 60 * 1000 + currentDate.valueOf(), function(event) {
+                                                    // Update every second
+                            if(event.type != "seconds") return;
+                            // Calculate the time left
+                            var timeLeft = [
+                              event.lasting.hours + event.lasting.days * 24,
+                              event.lasting.minutes,
+                              event.lasting.seconds
+                            ];
+                            // Convert the values to two digits strings
+                            for(var i = 0; i < timeLeft.length; ++i) {
+                              timeLeft[i] = (timeLeft[i] < 10 ? '0' : '') + timeLeft[i].toString();
+                            }
+                            // Concatenate the array and display at the tag
+                            $(this).html(timeLeft.join(':'));
+                        });
+                        $("#listview").listview("refresh"); 
+                    }
+                }
+            });
+
+             
+           
         },
         onDisconnect: function() {
             console.log('Disconnected');
@@ -79,3 +111,4 @@ $( "#channel-list" ).on( "click", ".remove", function( event ) {
     subCount.text( +subCount.text() - 1 );
     $("#channel-list").listview("refresh");
 });
+

@@ -46,6 +46,15 @@ rm.get('/test', function(req) {
 
 });
 
+rm.get('/items', function(req) {
+ 
+
+  // Publish to the Event bus....
+  var json = '[{"id":1,"title":"test","description":"","timeleft":800},{"id":2,"title":"test2","description":"213213","timeleft":80}]';
+  req.response.end(json);
+  
+});
+
 // Catch all - serve the index page
 rm.getWithRegEx('.*', function(req) {
   //if (req.uri == "/rest") req.response.sendFile("route_match/index.html")
